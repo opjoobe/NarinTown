@@ -1,0 +1,113 @@
+// Prisma schema — NarinTown
+// 데이터 모델 해설: ../../docs/data-model.md
+// 핵심 결정: ../../docs/decisions/0004-quiz-once-per-pair.md (Attempt unique constraint)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  nickname     String   @unique
+  avatarKey    String   // "layered:base=1|hair=3|outfit=2|acc=0" 또는 "preset:pokemon_025"
+  passwordHash String?  // ID+PW 로그인용. 매직링크만 쓰는 사용자는 null
+  createdAt    DateTime @default(now())
+
+  profile          Profile?
+  quiz             Quiz?
+  attempts         Attempt[]      @relation("Challenger")
+  receivedAttempts Attempt[]      @relation("Target")
+  score            Score?
+  lastPosition     LastPosition?
+  admin            AdminUser?
+}
+
+model AllowedEmail {
+  email     String   @id // 사전 등록된 가입 허용 이메일 (예: joobe.lee@navercorp.com)
+  createdAt DateTime @default(now())
+  createdBy String?  // 관리자 userId
+}
+
+model Profile {
+  userId String   @id
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skills String[] // ["React", "Backend", "DevOps"]
+  bio    String?
+}
+
+model Quiz {
+  userId   String  @id
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question String
+  answer   Boolean // O=true, X=false
+}
+
+model Attempt {
+  id           String   @id @default(cuid())
+  challengerId String
+  targetId     String
+  guess        Boolean? // null = 기권/타임아웃
+  isCorrect    Boolean
+  forfeited    Boolean  @default(false)
+  pointsDelta  Int      @default(0)
+  attemptedAt  DateTime @default(now())
+
+  challenger User @relation("Challenger", fields: [challengerId], references: [id], onDelete: Cascade)
+  target     User @relation("Target", fields: [targetId], references: [id], onDelete: Cascade)
+
+  @@unique([challengerId, targetId])
+  @@index([challengerId])
+  @@index([targetId])
+}
+
+model Score {
+  userId        String   @id
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  points        Int      @default(0)
+  correctCount  Int      @default(0)
+  currentStreak Int      @default(0)
+  bestStreak    Int      @default(0)
+  updatedAt     DateTime @updatedAt
+
+  @@index([points(sort: Desc), correctCount(sort: Desc), bestStreak(sort: Desc)])
+}
+
+model LastPosition {
+  userId    String   @id
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mapId     String   @default("default")
+  x         Int
+  y         Int
+  dir       String   @default("down")
+  updatedAt DateTime @updatedAt
+}
+
+model InviteCode {
+  code      String    @id
+  usedBy    String?
+  createdBy String?
+  createdAt DateTime  @default(now())
+  expiresAt DateTime?
+}
+
+model MagicLink {
+  token      String    @id
+  email      String
+  inviteCode String?
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([email])
+}
+
+model AdminUser {
+  userId String @id
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
