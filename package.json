@@ -1,0 +1,35 @@
+{
+  "name": "narintown",
+  "version": "0.0.1",
+  "private": true,
+  "description": "NarinTown — 게더타운형 가상 오피스 (1784 컨셉)",
+  "scripts": {
+    "dev": "pnpm -r --parallel run dev",
+    "build": "pnpm -r run build",
+    "lint": "pnpm -r run lint",
+    "typecheck": "pnpm -r run typecheck",
+    "test": "pnpm -r run test",
+    "db:migrate": "dotenv -e .env -- pnpm --filter @narintown/game-server exec prisma migrate dev",
+    "db:generate": "dotenv -e .env -- pnpm --filter @narintown/game-server exec prisma generate",
+    "db:studio": "dotenv -e .env -- pnpm --filter @narintown/game-server exec prisma studio",
+    "db:seed": "dotenv -e .env -- pnpm --filter @narintown/game-server exec prisma db seed",
+    "load-test": "pnpm --filter @narintown/game-server run load-test",
+    "load-test:clean": "pnpm --filter @narintown/game-server run load-test:clean",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.7",
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.5",
+    "eslint": "^8.57.0",
+    "@typescript-eslint/eslint-plugin": "^7.7.0",
+    "@typescript-eslint/parser": "^7.7.0",
+    "dotenv-cli": "^7.4.2"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@9.1.0"
+}
