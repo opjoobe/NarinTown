@@ -1,0 +1,4 @@
+# Phaser 씬 모듈은 Phase 2~3에서 추가됨.
+# - scenes/BootScene.ts
+# - scenes/OfficeScene.ts
+# - scenes/OnboardingCelebrationScene.ts
