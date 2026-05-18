@@ -3,7 +3,9 @@
 // 핵심 결정: ../../docs/decisions/0004-quiz-once-per-pair.md (Attempt unique constraint)
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  // alpine(linux-musl) 런타임용 binary 추가 (운영 Railway alpine 이미지)
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {

@@ -13,7 +13,8 @@ import { registerProfileRoutes } from './http/profile.js';
 import { registerAdminRoutes } from './http/admin.js';
 import { registerRealtime } from './realtime/index.js';
 
-const PORT = Number(process.env.GAME_SERVER_PORT ?? 3001);
+// Railway 같은 플랫폼은 PORT 환경변수로 포트를 주입
+const PORT = Number(process.env.GAME_SERVER_PORT ?? process.env.PORT ?? 3001);
 const ORIGIN = process.env.GAME_SERVER_ORIGIN ?? 'http://localhost:3000';
 
 const app = Fastify({
